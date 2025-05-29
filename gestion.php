@@ -31,6 +31,7 @@ session_start();
                     <th>supprimer</th>
                     <th>modifier</th>
                     <th>absent?</th>
+                    <th>nombre d'absences</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,7 +48,16 @@ session_start();
                                     <td><button class='supp1' data-nom='". $result["nom"] ."' data-prenom='". $result["prenom"] ."' data-id='". $result["id"] ."' >supprimer<i class='bi bi-trash'></i></button></td>
                                     <td><button class='mod1' data-nom1='". $result["nom"] ."' data-prenom1='". $result["prenom"] ."' data-id1='". $result["id"] ."' data-sexe1='". $result["sexe"] ."' data-daten1='". $result["daten"] ."' >modifier<i class='bi bi-pencil-square'></i></button></td>
                                     <td>
-                                    <button class='absence-btn' data-id='". $result["id"]."' >Absence</button>
+                                    <button class='absence-btn' data-id='". $result["id"]."' >oui</button>
+                                    </td>
+                                    <td>
+                                    <button 
+                                    class='monthly-absence-btn' 
+                                    data-id='". $result["id"]."' 
+                                    data-nom='". $result["nom"] ."' 
+                                    data-prenom='". $result['prenom'] ."'>
+                                    Voir absences du mois
+                                    </button>
                                     </td>
                                 
                                   </tr>";
@@ -58,14 +68,37 @@ session_start();
         </table>
     <form class="popoutForm2" id="absenceForm" method="POST" action="includes/add_absence.inc.php">
     <input type="hidden" name="student_id" id="absenceStudentId">
-    <label>Date:</label>
-    <input type="date" name="date_absence" required>
     <button type="submit">Confirm Absence</button>
     <button type="button" id="cancelAbsence">Annuler</button>
     </form>
-
-
+    <div id="monthlyAbsenceModal" class="popoutForm3" style="display:none;">
+    <h4 id="studentName"></h4>
+    <p>Nombre d'absences ce mois : <span id="monthlyAbsenceCount"></span></p>
+    <button id="closeAbsenceModal">Fermer</button>
     </div>
+    </div>
+    <script>
+document.querySelectorAll('.monthly-absence-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const studentId = this.getAttribute('data-id');
+    const nom = this.getAttribute('data-nom');
+    const prenom = this.getAttribute('data-prenom');
+
+    fetch('includes/get_monthly_absence.php?student_id=' + studentId)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('studentName').textContent = `Étudiant: ${prenom} ${nom}`;
+        document.getElementById('monthlyAbsenceCount').textContent = data.count;
+        document.getElementById('monthlyAbsenceModal').style.display = 'block';
+      });
+  });
+});
+
+document.getElementById('closeAbsenceModal').addEventListener('click', () => {
+  document.getElementById('monthlyAbsenceModal').style.display = 'none';
+});
+</script>
+
     <script>
     const absenceButtons = document.querySelectorAll('.absence-btn');
 const absenceForm = document.getElementById('absenceForm');
