@@ -30,6 +30,7 @@ session_start();
                     <th>date de naissance</th>
                     <th>supprimer</th>
                     <th>modifier</th>
+                    <th>absent?</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,13 +46,45 @@ session_start();
                                     <td>".$result["daten"]."</td>
                                     <td><button class='supp1' data-nom='". $result["nom"] ."' data-prenom='". $result["prenom"] ."' data-id='". $result["id"] ."' >supprimer<i class='bi bi-trash'></i></button></td>
                                     <td><button class='mod1' data-nom1='". $result["nom"] ."' data-prenom1='". $result["prenom"] ."' data-id1='". $result["id"] ."' data-sexe1='". $result["sexe"] ."' data-daten1='". $result["daten"] ."' >modifier<i class='bi bi-pencil-square'></i></button></td>
+                                    <td>
+                                    <button class='absence-btn' data-id='". $result["id"]."' >Absence</button>
+                                    </td>
+                                
                                   </tr>";
                         }
                     }
                 ?>
             </tbody>
         </table>
+    <form class="popoutForm2" id="absenceForm" method="POST" action="includes/add_absence.inc.php">
+    <input type="hidden" name="student_id" id="absenceStudentId">
+    <label>Date:</label>
+    <input type="date" name="date_absence" required>
+    <button type="submit">Confirm Absence</button>
+    <button type="button" id="cancelAbsence">Annuler</button>
+    </form>
+
+
     </div>
+    <script>
+    const absenceButtons = document.querySelectorAll('.absence-btn');
+const absenceForm = document.getElementById('absenceForm');
+const cancelAbsence = document.getElementById('cancelAbsence');
+
+absenceButtons.forEach(btn => {
+  btn.addEventListener('click', function () {
+    const studentId = this.getAttribute('data-id');
+    document.getElementById('absenceStudentId').value = studentId;
+    absenceForm.classList.add('show'); // Now correctly targets absence form
+  });
+});
+
+cancelAbsence.addEventListener('click', () => {
+  absenceForm.classList.remove('show');
+});
+
+
+    </script>
     <script>
     // Select all buttons by class name
     const deleteButtons = document.querySelectorAll('.supp1');
